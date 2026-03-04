@@ -4,7 +4,7 @@ import { test as base, expect } from '@playwright/test';
 export const test = base.extend({
   loggedInPage: async ({ page }, use) => {
     // login sequence used throughout the repo
-    await page.goto('https://seubarriga.wcaquino.me');
+    await page.goto('/');
     await page.getByPlaceholder('Email').fill('mikael@email.com');
     await page.getByPlaceholder('Password').fill('Mikael123');
     await page.getByRole('button').click();

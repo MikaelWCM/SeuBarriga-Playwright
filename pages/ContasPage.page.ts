@@ -1,4 +1,4 @@
-import {Page} from "@playwright/test";
+import {Page, expect} from "@playwright/test";
 
 export class ContasPage{
     constructor(private page: Page){}
@@ -18,7 +18,7 @@ export class ContasPage{
     }
 
     async limparCampoNome(){
-        await this.page.locator('input[id="nome"]').clear;
+        await this.page.locator('input[id="nome"]').clear();
     }
 
     async clicarBotaoSalvar(){
@@ -26,12 +26,17 @@ export class ContasPage{
     }
 
     async clicarBotaoEditarConta(nomeConta: string){
+        this.limparCampoNome();
         const linha = await this.page.getByRole("row").filter({hasText:nomeConta});
-        await linha.locator('//a[contains(@href, "/editarConta")]').click();
+        await linha.locator('a[href*="editarConta"]').click();
     }
 
     async clicarBotaoExcluirConta(nomeConta: string){
         const linha = await this.page.getByRole("row").filter({hasText:nomeConta});
-        await linha.locator('//a[contains(@href, "/removerConta")]').click();
+        await linha.locator('a[href*="removerConta"]').click();
+    }
+
+    async validarMensagemRetorno(mensagem: string){
+        await expect(this.page.locator("div[role='alert']")).toContainText(mensagem);
     }
 }
