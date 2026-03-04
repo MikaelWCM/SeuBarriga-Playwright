@@ -4,6 +4,9 @@ import { MovimentacaoPage } from '../pages/MovimentacaoPage.page';
 
 // loggedInPage fixture handles navigation and authentication before each test
 
+const date = new Date();
+const hoje = date.toString();
+const dataFuturo = date.setDate(date.getDate() + 1).toString();
 
 test('Validar se é possível acessar a tela de Criar Movimentação', async({loggedInPage: page})=>{
 
@@ -12,102 +15,98 @@ test('Validar se é possível acessar a tela de Criar Movimentação', async({lo
 
 })
 
-test('Validar se é possível inserir uma movimentação do tipo Receita/Pago', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Movimentação adicionada com sucesso!" é exibida ao inserir uma movimentação', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "02/03/2026", "03/03/2026", "Movimentação criada pela automação", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "500", "a");
-
-    await expect(page.locator("div[role='alert']")).toContainText('Movimentação adicionada com sucesso!');
+    await movimentacaoDSL.validarMengagemRetorno("Movimentação adicionada com sucesso!");
 
 })
 
-test('Validar se o campo Data da Movimentação é obrigatório', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Data da Movimentação é obrigatório" é exibida quando o campo Data da Movimentação é deixado em branco', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "", "03/03/2026", "Movimentação criada pela automação", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "", dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "500", "a");
 
-    await expect(page.locator("div[role='alert']")).toContainText('Data da Movimentação é obrigatório');
+    await movimentacaoDSL.validarMengagemRetorno("Data da Movimentação é obrigatório");
 
 })
 
-test('Validar se o campo Data do Pagamento é obrigatório', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Data do Pagamento é obrigatório" é exibida quando o campo Data do Pagamento é deixado em branco', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "03/03/2026", "", "Movimentação criada pela automação", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, "", "Movimentação criada pela automação", 
     "Contratante Automação", "500", "a");
 
-    await expect(page.locator("div[role='alert']")).toContainText('Data do pagamento é obrigatório');
+    await movimentacaoDSL.validarMengagemRetorno("Data do Pagamento é obrigatório");
 
 })
 
-test('Validar se o campo Descrição é obrigatório', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Descrição é obrigatório" é exibida quando o campo Descrição é deixado em branco', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "03/03/2026", "04/03/2026", "", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "", 
     "Contratante Automação", "500", "a");
 
-    await expect(page.locator("div[role='alert']")).toContainText('Descrição é obrigatório');
+    await movimentacaoDSL.validarMengagemRetorno("Descrição é obrigatório");
 
 })
 
 
-test('Validar se o campo Interessado é obrigatório', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Interessado é obrigatório" é exibida quando o campo Interessado é deixado em branco', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "03/03/2026", "04/03/2026", "Movimentação criada pela automação", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "", "500", "a");
 
-    await expect(page.locator("div[role='alert']")).toContainText('Interessado é obrigatório');
+    await movimentacaoDSL.validarMengagemRetorno("Interessado é obrigatório");
 
 })
 
-test('Validar se o campo Valor é obrigatório', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Valor é obrigatório" é exibida quando o campo Valor é deixado em branco', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "03/03/2026", "04/03/2026", "Movimentação criada pela automação", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "", "a");
 
-    await expect(page.locator("div[role='alert']")).toContainText('Valor é obrigatório');
+    await movimentacaoDSL.validarMengagemRetorno("Valor é obrigatório");
 
 })
 
-test('Validar se o campo Valor aceita somente valores do tipo número', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Valor deve ser um número" é exibida quando o campo Valor contém caracteres não numéricos', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "03/03/2026", "04/03/2026", "Movimentação criada pela automação", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "Valor", "a");
 
-    await expect(page.locator("div[role='alert']")).toContainText('Valor deve ser um número');
+    await movimentacaoDSL.validarMengagemRetorno("Valor deve ser um número");
 
 })
 
-test('Validar se o sistema bloqueia movimentações com Data de Movimentação no futuro', async({loggedInPage: page})=>{
-
-    const hoje = new Date();
-    const dataFuturo = hoje.setDate(hoje.getDate() + 1).toString();
+test('Validar se a mensagem "Data da Movimentação deve ser menor ou igual à data atual" é exibida quando o campo Data da Movimentação contém uma data no futuro', async({loggedInPage: page})=>{
 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", dataFuturo, "04/03/2026", "Movimentação criada pela automação", 
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", dataFuturo, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "100", "a");
 
-    await expect(page.locator("div[role='alert']")).toContainText('Data da Movimentação deve ser menor ou igual à data atual');
+    await movimentacaoDSL.validarMengagemRetorno("Data da Movimentação deve ser menor ou igual à data atual");
 
 })

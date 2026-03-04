@@ -19,6 +19,18 @@ test('Verificar se é possível acessar a tela Adicionar conta', async({loggedIn
 
 })
 
+
+test('Acessar Lista de Contas', async({loggedInPage: page})=>{
+
+  const contasPage = new ContasPage(page);
+  const dslConta = new ContasDSL(contasPage);
+
+  await dslConta.acessarListaDeContas();
+
+  await expect(page).toHaveTitle('Seu Barriga - Contas');
+
+})
+
 test('Verificar se a mensagem "Conta adicionada com sucesso!" é exibida ao adicionar uma nova conta', async({loggedInPage: page})=>{
 
   const contasPage = new ContasPage(page);
@@ -50,17 +62,6 @@ test('Verificar se a mensagem "Já existe uma conta com esse nome!" é exibida c
   await dslConta.acessarCadastroDeConta();
   await dslConta.adicionarConta(nomeConta);
   await dslConta.validarMengagemRetorno("Já existe uma conta com esse nome!");
-})
-
-test('Acessar Lista de Contas', async({loggedInPage: page})=>{
-
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
-
-  await dslConta.acessarListaDeContas();
-
-  await expect(page).toHaveTitle('Seu Barriga - Contas');
-
 })
 
 test('Validar se a mensagem "Conta alterada com sucesso!" é exibida ao editar o nome de uma conta', async({loggedInPage: page})=>{

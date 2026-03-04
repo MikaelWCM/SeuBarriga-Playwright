@@ -3,6 +3,13 @@ import { MovimentacaoPage } from "../pages/MovimentacaoPage.page";
 export class MovimentacaoDSL {
   constructor(private movimentacaoPage: MovimentacaoPage) {}
 
+    async validarMengagemRetorno(mensagem: string){
+
+        if(mensagem === "Conta adicionada com sucesso!"){
+           await this.movimentacaoPage.validarMensagemRetorno(mensagem);
+        }
+    }
+
     async criarNovaMovimentacaoPago(tipoMovimentacao: string, dataMovimentacao: string, dataPagamento: string, descricao: string, 
         interessado: string, valor: string, conta: string){
         
