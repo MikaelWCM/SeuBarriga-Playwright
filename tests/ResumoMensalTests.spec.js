@@ -1,56 +1,64 @@
 import { test, expect } from './fixtures';
-import { ResumoMensalPage } from '../pages/ResumoMensalPage.page';
-import { ResumoMensalDSL } from '../dsl/ResumoMensalDSL.dsl';
-
-import { MovimentacaoPage } from '../pages/MovimentacaoPage.page';
-import { MovimentacaoDSL } from '../dsl/MovimentacaoDSL.dsl';
-
-import { ContasPage } from '../pages/ContasPage.page';
-import { ContasDSL } from '../dsl/ContasDSL.dsl';
+import { randomUUID } from 'crypto';
 
 // login handled by loggedInPage fixture
 
 
-test('Validar se é possível acessar a tela de Resumo Mensal', async({loggedInPage: page})=>{
-    const resumoMensalPage = new ResumoMensalPage(page);
-    const resumoMensalDSL = new ResumoMensalDSL(resumoMensalPage);  
+test('Validar se é possível acessar a tela de Resumo Mensal', async({loggedInPage: page, resumoMensalDSL})=>{
+
     await resumoMensalDSL.acessarResumoMensal();
 
     await expect(page).toHaveTitle("Seu Barriga - Extrato");
 })
 
-test('Validar se é possível excluir uma movimentação', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Movimentação removida com sucesso!" é exibida ao excluir uma movimentação', async({loggedInPage: page, contasDSL, movimentacaoDSL, resumoMensalDSL, resumoMensalPage})=>{
+    
+    const dataAtual = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const mes = await resumoMensalDSL.retornarMesAtual();   
+    const ano = await resumoMensalDSL.retornarAnoAtual();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
 
-    const movimentacaoPage = new MovimentacaoPage(page);
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
-    const resumoMensalPage = new ResumoMensalPage(page);
-    const resumoMensalDSL = new ResumoMensalDSL(resumoMensalPage);  
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Despesa", "05/03/2026", "06/03/2026", "Movimentação para exclusão", 
-    "Contratante Automação", "200", "a");
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Despesa", dataAtual, dataFuturo, nomeMovimentacao+'-Exclusão', 
+    "Contratante Automação", "200", nomeConta);
 
     await resumoMensalDSL.acessarResumoMensal();
-    await resumoMensalDSL.filtrarMovimentacoes("Março", "2026");        
+    await resumoMensalDSL.filtrarMovimentacoes(mes, ano);        
 
-    await resumoMensalDSL.excluirMovimentacao("Movimentação para exclusão");
-
-    await expect(page.locator("div[role='alert']")).toContainText('Movimentação removida com sucesso!');
+    await resumoMensalDSL.excluirMovimentacao(nomeMovimentacao);
+    await resumoMensalPage.validarMensagemRetorno("Movimentação removida com sucesso!");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 
-test('Validar se o sistema bloqueia e exlusão de uma conta com movimentação associada', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Conta em uso na movimentações" é exibida caso o usuário tente excluir uma conta com movimentação associada', async({loggedInPage: page, contasDSL, contasPage, movimentacaoDSL, resumoMensalDSL})=>{
 
-    const contasPage = new ContasPage(page);
-    const dslConta = new ContasDSL(contasPage);
-    const resumoMensalPage = new ResumoMensalPage(page);
-    const resumoMensalDSL = new ResumoMensalDSL(resumoMensalPage);  
+    const dataAtual = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
 
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
+
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Despesa", dataAtual, dataFuturo, nomeMovimentacao, 
+    "Contratante Automação", "200", nomeConta);
+
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta);
+
+    await contasPage.validarMensagemRetorno("Conta em uso na movimentações");
     await resumoMensalDSL.acessarResumoMensal();
-    await resumoMensalDSL.filtrarMovimentacoes("Março", "2026");
-
-    const conta = await resumoMensalDSL.obterContaMovimentacao(1);
-    await dslConta.excluirConta(conta);
-    await expect(page.locator("div[role='alert']")).toContainText('Conta em uso na movimentações');
+    await resumoMensalDSL.excluirMovimentacao(nomeMovimentacao); // limpeza de dados
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 

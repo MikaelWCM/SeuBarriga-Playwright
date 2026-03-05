@@ -10,7 +10,6 @@ export class ContasDSL {
 
     async adicionarConta(nome: string){
 
-        await this.contasPage.acessarAdicionarContas();
         await this.contasPage.preencherCampoNome(nome);
         await this.contasPage.clicarBotaoSalvar();
 
@@ -21,14 +20,14 @@ export class ContasDSL {
     }
 
     async editarConta(nomeConta: string, novoNome: string){
+        
         await this.contasPage.clicarBotaoEditarConta(nomeConta);
-        await this.contasPage.limparCampoNome();
         await this.contasPage.preencherCampoNome(novoNome);
         await this.contasPage.clicarBotaoSalvar();
+
     }
 
     async excluirConta(nomeConta: string){
-        await this.contasPage.acessarListaContas();
         await this.contasPage.clicarBotaoExcluirConta(nomeConta);
     }
 }

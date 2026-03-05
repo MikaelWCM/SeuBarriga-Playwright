@@ -1,89 +1,80 @@
 import { test, expect } from './fixtures';
-import { ContasPage } from '../pages/ContasPage.page';
-import { ContasDSL } from '../dsl/ContasDSL.dsl';
+import { randomUUID } from 'crypto';
 
 // login handled by loggedInPage fixture
 
+test('Verificar se é possível acessar a tela Adicionar Conta', async({loggedInPage: page, contasDSL})=>{
 
-test('Verificar se é possível acessar a tela Adicionar conta', async({loggedInPage: page})=>{
-
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
-
-  await dslConta.acessarCadastroDeConta();
+  await contasDSL.acessarCadastroDeConta();
 
   await expect(page).toHaveTitle('Seu Barriga - Adicionar Conta');
 
 })
 
-test('Verificar mensagem ao adicionar uma nova conta', async({loggedInPage: page})=>{
 
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
+test('Verificar se é possível acessar a tela Lista de Contas', async({loggedInPage: page, contasDSL})=>{
 
-  await dslConta.adicionarConta("Zequinha");
-
-  await expect(page.locator("div[role='alert']")).toContainText('Conta adicionada com sucesso!');
-  await dslConta.excluirConta("Zequinha");
-})
-
-test('Verificar mensagem de erro ao tentar salvar conta sem nome', async({loggedInPage: page})=>{
-
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
-
-  await dslConta.adicionarConta("");
-
-  await expect(page.locator("div[role='alert']")).toContainText('Informe o nome da conta');
-
-})
-
-test('Verificar se o sistema não permite cadastrar duas contas com o mesmo nome', async({loggedInPage: page})=>{
-
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
-
-  await dslConta.adicionarConta("Luisinho");
-  await dslConta.adicionarConta("Luisinho");
-
-  await expect(page.locator("div[role='alert']")).toContainText('Já existe uma conta com esse nome!');
-
-  await dslConta.excluirConta("Luisinho");
-})
-
-test('Acessar Lista de Contas', async({loggedInPage: page})=>{
-
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
-
-  await dslConta.acessarListaDeContas();
+  await contasDSL.acessarListaDeContas();
 
   await expect(page).toHaveTitle('Seu Barriga - Contas');
 
 })
 
-test('Validar se é possível editar o nome de uma conta', async({loggedInPage: page})=>{
+test('Verificar se a mensagem "Conta adicionada com sucesso!" é exibida ao adicionar uma nova conta', async({loggedInPage: page, contasDSL, contasPage})=>{
 
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
+  const nomeConta = 'Conta-' + randomUUID();
 
-  await dslConta.adicionarConta("Mikael");
-
-  await dslConta.acessarListaDeContas();
-  await dslConta.editarConta("Mikael", "Mikael02");
-
-  await expect(page.locator("div[role='alert']")).toContainText('Conta alterada com sucesso!');
-  await dslConta.excluirConta("Mikael02");
+  await contasDSL.acessarCadastroDeConta();
+  await contasDSL.adicionarConta(nomeConta);
+  await contasPage.validarMensagemRetorno("Conta adicionada com sucesso!");
+  await contasDSL.acessarListaDeContas();
+  await contasDSL.excluirConta(nomeConta); // limpeza de dados
 })
 
-test('Validar se é possível excluir uma conta', async({loggedInPage: page})=>{
+test('Verificar se a mensagem "Informe o nome da conta" é exibida ao tentar salvar conta sem nome', async({loggedInPage: page, contasDSL, contasPage})=>{
 
-  const contasPage = new ContasPage(page);
-  const dslConta = new ContasDSL(contasPage);
+  await contasDSL.acessarCadastroDeConta();
+  await contasDSL.adicionarConta("");
+  await contasPage.validarMensagemRetorno("Informe o nome da conta");
 
-  await dslConta.adicionarConta("ContaExclusão");
-  await dslConta.excluirConta("ContaExclusão");
+})
 
-  await expect(page.locator("div[role='alert']")).toContainText('Conta removida com sucesso!');
+test('Verificar se a mensagem "Já existe uma conta com esse nome!" é exibida caso o usuário tente cadastrar duas contas com o mesmo nome', async({loggedInPage: page, contasDSL, contasPage})=>{
+
+  const nomeConta = 'Conta-' + randomUUID();
+
+  await contasDSL.acessarCadastroDeConta();
+  await contasDSL.adicionarConta(nomeConta);
+  await contasDSL.acessarCadastroDeConta();
+  await contasDSL.adicionarConta(nomeConta);
+  await contasPage.validarMensagemRetorno("Já existe uma conta com esse nome!");
+   await contasDSL.acessarListaDeContas();
+  await contasDSL.excluirConta(nomeConta); // limpeza de dados
+})
+
+test('Validar se a mensagem "Conta alterada com sucesso!" é exibida ao editar o nome de uma conta', async({loggedInPage: page, contasDSL, contasPage})=>{
+
+  const nomeConta = 'Conta-' + randomUUID();
+
+  await contasDSL.acessarCadastroDeConta();
+  await contasDSL.adicionarConta(nomeConta);
+  await contasDSL.acessarListaDeContas();
+  await contasDSL.editarConta(nomeConta, nomeConta + '1');
+  await contasPage.validarMensagemRetorno("Conta alterada com sucesso!");
+   await contasDSL.acessarListaDeContas();
+  await contasDSL.excluirConta(nomeConta + '1'); // limpeza de dados
+
+})
+
+test('Validar se a mensagem "Conta removida com sucesso!" é exibida ao excluir uma conta', async({loggedInPage: page, contasDSL, contasPage})=>{
+
+  const nomeConta = 'Conta-' + randomUUID();
+
+  await contasDSL.acessarCadastroDeConta();
+  await contasDSL.adicionarConta(nomeConta);
+  await contasDSL.acessarListaDeContas();
+  await contasDSL.excluirConta(nomeConta);
+
+  await contasPage.validarMensagemRetorno("Conta removida com sucesso!");
 
 })

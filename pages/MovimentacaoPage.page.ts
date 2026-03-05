@@ -1,10 +1,14 @@
-import {Page} from "@playwright/test";
+import {Page, expect} from "@playwright/test";
 
 export class MovimentacaoPage{
     constructor(private page: Page){}
 
     async acessarTelaCriarMovimentacao(){
         await this.page.locator('a:has-text("Criar Movimentação")').click();
+    }
+
+    async validarMensagemRetorno(mensagem: string){
+        await expect(this.page.locator("div[role='alert']")).toContainText(mensagem);
     }
 
     async selecionarTipoMovimentacao(tipoMovimentacao: string){
