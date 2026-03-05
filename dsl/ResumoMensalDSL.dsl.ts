@@ -3,6 +3,8 @@ import { ResumoMensalPage } from "../pages/ResumoMensalPage.page";
 export class ResumoMensalDSL {
   constructor(private resumoMensalPage: ResumoMensalPage) {}
 
+
+  
     async acessarResumoMensal(){
         await this.resumoMensalPage.acessarResumoMensal();
     }
@@ -19,6 +21,18 @@ export class ResumoMensalDSL {
 
     async obterContaMovimentacao(linha: number){
         return await this.resumoMensalPage.obterContaMovimentacao(linha);
+    }
+
+    async retornarMesAtual(){
+        const dataAtual = new Date();
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        return mes;
+    }
+
+    async retornarAnoAtual(){
+        const dataAtual = new Date();
+        const ano = dataAtual.getFullYear();
+        return String(ano);
     }
 
 }

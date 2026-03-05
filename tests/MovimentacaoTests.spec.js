@@ -1,123 +1,172 @@
 import { test, expect } from './fixtures';
-import { MovimentacaoDSL } from '../dsl/MovimentacaoDSL.dsl';
-import { MovimentacaoPage } from '../pages/MovimentacaoPage.page';
+import { randomUUID } from 'crypto';
 
 // loggedInPage fixture handles navigation and authentication before each test
 
-const date = new Date();
-const hoje = date.toString();
-const dataFuturo = date.setDate(date.getDate() + 1).toString();
 
-test('Validar se é possível acessar a tela de Criar Movimentação', async({loggedInPage: page})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+test('Validar se é possível acessar a tela de Criar Movimentação', async({loggedInPage: page, movimentacaoDSL})=>{
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await expect(page).toHaveTitle("Seu Barriga - Movimentações");
 
 })
 
-test('Validar se a mensagem "Movimentação adicionada com sucesso!" é exibida ao inserir uma movimentação', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Movimentação adicionada com sucesso!" é exibida ao inserir uma movimentação', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage, resumoMensalDSL})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+    const hoje = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
-    "Contratante Automação", "500", "a");
-    await movimentacaoDSL.validarMengagemRetorno("Movimentação adicionada com sucesso!");
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, nomeMovimentacao, 
+    "Contratante Automação", "500", nomeConta);
+    await movimentacaoPage.validarMensagemRetorno("Movimentação adicionada com sucesso!");
+    await resumoMensalDSL.acessarResumoMensal();
+    await resumoMensalDSL.excluirMovimentacao(nomeMovimentacao); // limpeza de dados
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 
-test('Validar se a mensagem "Data da Movimentação é obrigatório" é exibida quando o campo Data da Movimentação é deixado em branco', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Data da Movimentação é obrigatório" é exibida quando o campo Data da Movimentação é deixado em branco', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "", dataFuturo, "Movimentação criada pela automação", 
-    "Contratante Automação", "500", "a");
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "", dataFuturo, nomeMovimentacao, 
+    "Contratante Automação", "500", nomeConta);
 
-    await movimentacaoDSL.validarMengagemRetorno("Data da Movimentação é obrigatório");
+    await movimentacaoPage.validarMensagemRetorno("Data da Movimentação é obrigatório");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 
-test('Validar se a mensagem "Data do Pagamento é obrigatório" é exibida quando o campo Data do Pagamento é deixado em branco', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Data do Pagamento é obrigatório" é exibida quando o campo Data do Pagamento é deixado em branco', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+    const hoje = await movimentacaoDSL.retornarDataAtual();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, "", "Movimentação criada pela automação", 
-    "Contratante Automação", "500", "a");
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, "", nomeMovimentacao, 
+    "Contratante Automação", "500", nomeConta);
 
-    await movimentacaoDSL.validarMengagemRetorno("Data do Pagamento é obrigatório");
+    await movimentacaoPage.validarMensagemRetorno("Data do pagamento é obrigatório");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 
-test('Validar se a mensagem "Descrição é obrigatório" é exibida quando o campo Descrição é deixado em branco', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Descrição é obrigatório" é exibida quando o campo Descrição é deixado em branco', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+    const hoje = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "", 
-    "Contratante Automação", "500", "a");
+    "Contratante Automação", "500", nomeConta);
 
-    await movimentacaoDSL.validarMengagemRetorno("Descrição é obrigatório");
-
-})
-
-
-test('Validar se a mensagem "Interessado é obrigatório" é exibida quando o campo Interessado é deixado em branco', async({loggedInPage: page})=>{
-
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
-
-    await movimentacaoDSL.acessarTelaCriarMovimentacao();
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
-    "", "500", "a");
-
-    await movimentacaoDSL.validarMengagemRetorno("Interessado é obrigatório");
+    await movimentacaoPage.validarMensagemRetorno("Descrição é obrigatório");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 
-test('Validar se a mensagem "Valor é obrigatório" é exibida quando o campo Valor é deixado em branco', async({loggedInPage: page})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+test('Validar se a mensagem "Interessado é obrigatório" é exibida quando o campo Interessado é deixado em branco', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage})=>{
+
+    const hoje = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
-    "Contratante Automação", "", "a");
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, nomeMovimentacao, 
+    "", "500", nomeConta);
 
-    await movimentacaoDSL.validarMengagemRetorno("Valor é obrigatório");
+    await movimentacaoPage.validarMensagemRetorno("Interessado é obrigatório");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 
-test('Validar se a mensagem "Valor deve ser um número" é exibida quando o campo Valor contém caracteres não numéricos', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Valor é obrigatório" é exibida quando o campo Valor é deixado em branco', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+    const hoje = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
-    "Contratante Automação", "Valor", "a");
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, nomeMovimentacao, 
+    "Contratante Automação", "", nomeConta);
 
-    await movimentacaoDSL.validarMengagemRetorno("Valor deve ser um número");
+    await movimentacaoPage.validarMensagemRetorno("Valor é obrigatório");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })
 
-test('Validar se a mensagem "Data da Movimentação deve ser menor ou igual à data atual" é exibida quando o campo Data da Movimentação contém uma data no futuro', async({loggedInPage: page})=>{
+test('Validar se a mensagem "Valor deve ser um número" é exibida quando o campo Valor contém caracteres não numéricos', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage})=>{
 
-    const movimentacaoPage = new MovimentacaoPage(page)
-    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+    const hoje = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
-    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", dataFuturo, dataFuturo, "Movimentação criada pela automação", 
-    "Contratante Automação", "100", "a");
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, nomeMovimentacao, 
+    "Contratante Automação", "Valor", nomeConta);
 
-    await movimentacaoDSL.validarMengagemRetorno("Data da Movimentação deve ser menor ou igual à data atual");
+    await movimentacaoPage.validarMensagemRetorno("Valor deve ser um número");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
+
+})
+
+test('Validar se a mensagem "Data da Movimentação deve ser menor ou igual à data atual" é exibida quando o campo Data da Movimentação contém uma data no futuro', async({loggedInPage: page, contasDSL, movimentacaoDSL, movimentacaoPage})=>{
+
+    const hoje = await movimentacaoDSL.retornarDataAtual();
+    const dataFuturo = await movimentacaoDSL.retornarDataFutura();
+    const nomeMovimentacao = 'Movimentacao-' + randomUUID();
+    const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await contasDSL.acessarCadastroDeConta();
+    await contasDSL.adicionarConta(nomeConta);
+
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
+    await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", dataFuturo, dataFuturo, nomeMovimentacao, 
+    "Contratante Automação", "100", nomeConta);
+
+    await movimentacaoPage.validarMensagemRetorno("Data da Movimentação deve ser menor ou igual à data atual");
+    await contasDSL.acessarListaDeContas();
+    await contasDSL.excluirConta(nomeConta); // limpeza de dados
 
 })

@@ -8,14 +8,6 @@ export class ContasDSL {
         await this.contasPage.acessarAdicionarContas();
     }
 
-    async validarMengagemRetorno(mensagem: string){
-
-        if(mensagem === "Conta adicionada com sucesso!"){
-           await this.contasPage.validarMensagemRetorno(mensagem);
-        }
-    }
-
-
     async adicionarConta(nome: string){
 
         await this.contasPage.preencherCampoNome(nome);

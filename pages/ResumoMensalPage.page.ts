@@ -1,4 +1,4 @@
-import {Page} from "@playwright/test";  
+import {Page, expect} from "@playwright/test";  
 
 export class ResumoMensalPage{
     constructor(private page: Page){}
@@ -8,7 +8,7 @@ export class ResumoMensalPage{
     }
 
     async selecionarMes(mes: string){
-        await this.page.locator('select[id="mes"]').selectOption({label: mes});
+        await this.page.locator('select[id="mes"]').selectOption(mes);
     }
 
     async selecionarAno(ano: string){
@@ -25,7 +25,11 @@ export class ResumoMensalPage{
 
 
     async excluirMovimentacao(descricao: string){
-        const linha = await this.page.getByRole("row").filter({hasText:descricao});
-        await linha.locator('//a[contains(@href, "/removerMovimentacao")]').click();
+        const linha = await this.page.getByRole("row").filter({hasText: descricao});
+        await linha.locator('a[href*="removerMovimentacao"]').click();
+    }
+
+    async validarMensagemRetorno(mensagem: string){
+        await expect(this.page.locator("div[role='alert']")).toContainText(mensagem);
     }
 }
