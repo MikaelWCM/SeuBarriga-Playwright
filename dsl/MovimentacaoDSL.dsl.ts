@@ -3,6 +3,10 @@ import { MovimentacaoPage } from "../pages/MovimentacaoPage.page";
 export class MovimentacaoDSL {
   constructor(private movimentacaoPage: MovimentacaoPage) {}
 
+    async acessarTelaCriarMovimentacao(){
+      await this.movimentacaoPage.acessarTelaCriarMovimentacao();
+    }
+
     async validarMengagemRetorno(mensagem: string){
 
         if(mensagem === "Conta adicionada com sucesso!"){
@@ -13,7 +17,6 @@ export class MovimentacaoDSL {
     async criarNovaMovimentacaoPago(tipoMovimentacao: string, dataMovimentacao: string, dataPagamento: string, descricao: string, 
         interessado: string, valor: string, conta: string){
         
-        await this.movimentacaoPage.acessarTelaCriarMovimentacao();
         await this.movimentacaoPage.selecionarTipoMovimentacao(tipoMovimentacao);
         await this.movimentacaoPage.preencherDataMovimentacao(dataMovimentacao);
         await this.movimentacaoPage.preencherDataPagamento(dataPagamento);

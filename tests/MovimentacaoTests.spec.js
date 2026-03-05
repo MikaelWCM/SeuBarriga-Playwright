@@ -10,7 +10,10 @@ const dataFuturo = date.setDate(date.getDate() + 1).toString();
 
 test('Validar se é possível acessar a tela de Criar Movimentação', async({loggedInPage: page})=>{
 
-    await page.locator('a:has-text("Criar Movimentação")').click();
+    const movimentacaoPage = new MovimentacaoPage(page)
+    const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
+
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await expect(page).toHaveTitle("Seu Barriga - Movimentações");
 
 })
@@ -20,6 +23,7 @@ test('Validar se a mensagem "Movimentação adicionada com sucesso!" é exibida 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "500", "a");
     await movimentacaoDSL.validarMengagemRetorno("Movimentação adicionada com sucesso!");
@@ -31,6 +35,7 @@ test('Validar se a mensagem "Data da Movimentação é obrigatório" é exibida 
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", "", dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "500", "a");
 
@@ -43,6 +48,7 @@ test('Validar se a mensagem "Data do Pagamento é obrigatório" é exibida quand
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, "", "Movimentação criada pela automação", 
     "Contratante Automação", "500", "a");
 
@@ -55,6 +61,7 @@ test('Validar se a mensagem "Descrição é obrigatório" é exibida quando o ca
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "", 
     "Contratante Automação", "500", "a");
 
@@ -68,6 +75,7 @@ test('Validar se a mensagem "Interessado é obrigatório" é exibida quando o ca
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "", "500", "a");
 
@@ -80,6 +88,7 @@ test('Validar se a mensagem "Valor é obrigatório" é exibida quando o campo Va
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "", "a");
 
@@ -92,6 +101,7 @@ test('Validar se a mensagem "Valor deve ser um número" é exibida quando o camp
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", hoje, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "Valor", "a");
 
@@ -104,6 +114,7 @@ test('Validar se a mensagem "Data da Movimentação deve ser menor ou igual à d
     const movimentacaoPage = new MovimentacaoPage(page)
     const movimentacaoDSL = new MovimentacaoDSL(movimentacaoPage);
 
+    await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await movimentacaoDSL.criarNovaMovimentacaoPago("Receita", dataFuturo, dataFuturo, "Movimentação criada pela automação", 
     "Contratante Automação", "100", "a");
 
