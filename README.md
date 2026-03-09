@@ -72,10 +72,29 @@ O projeto utiliza Allure Report para geração de relatórios detalhados. Os rel
 - Evidências de falha (screenshots)
 
 ### Executando o projeto
-- Instalar dependências: npm install
-- Executar os testes: npx playwright test
-- Executar em modo debug: npx playwright test --debug
-- Gerar relatório Allure: npm run report
+
+Siga os passos abaixo para configurar e executar os testes automatizados localmente.
+
+##### Clonar o repositório
+
+- git clone https://github.com/MikaelWCM/SeuBarriga-Playwright.git
+- cd SeuBarriga-Playwright
+
+#####  Instalar dependências do projeto
+
+- npm install
+
+#####  Instalar os browsers do Playwright
+
+- npx playwright install
+
+#####  Executar os testes
+
+- npx playwright test
+
+##### Gerar relatório Allure
+
+- npm run report
 
 ### Melhorias futuras
 
