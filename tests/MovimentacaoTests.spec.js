@@ -1,11 +1,19 @@
 import { test, expect } from './fixtures';
 import { randomUUID } from 'crypto';
+import { epic, feature, story, severity } from 'allure-js-commons';
+
+
 
 // loggedInPage fixture handles navigation and authentication before each test
 
 
 
 test('Validar se é possível acessar a tela de Criar Movimentação', async({loggedInPage: page, movimentacaoDSL})=>{
+
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Acessar tela de criação de movimentação');
+    await severity('critical');
 
     await movimentacaoDSL.acessarTelaCriarMovimentacao();
     await expect(page).toHaveTitle("Seu Barriga - Movimentações");
@@ -18,6 +26,11 @@ test('Validar se a mensagem "Movimentação adicionada com sucesso!" é exibida 
     const dataFuturo = await movimentacaoDSL.retornarDataFutura();
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação');
+    await severity('critical');
 
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
@@ -39,6 +52,11 @@ test('Validar se a mensagem "Data da Movimentação é obrigatório" é exibida 
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
 
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação sem data da movimentação');
+    await severity('critical');
+
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
 
@@ -58,6 +76,11 @@ test('Validar se a mensagem "Data do Pagamento é obrigatório" é exibida quand
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
 
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação sem data do pagamento');
+    await severity('critical');
+
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
 
@@ -76,6 +99,12 @@ test('Validar se a mensagem "Descrição é obrigatório" é exibida quando o ca
     const hoje = await movimentacaoDSL.retornarDataAtual();
     const dataFuturo = await movimentacaoDSL.retornarDataFutura();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação sem descrição');
+    await severity('critical');
 
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
@@ -98,6 +127,12 @@ test('Validar se a mensagem "Interessado é obrigatório" é exibida quando o ca
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
 
+
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação sem interessado');
+    await severity('critical');
+
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
 
@@ -117,6 +152,11 @@ test('Validar se a mensagem "Valor é obrigatório" é exibida quando o campo Va
     const dataFuturo = await movimentacaoDSL.retornarDataFutura();
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação sem valor');
+    await severity('critical');
 
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
@@ -138,6 +178,11 @@ test('Validar se a mensagem "Valor deve ser um número" é exibida quando o camp
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
 
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação com valor não numérico');
+    await severity('critical');
+
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
 
@@ -157,6 +202,11 @@ test('Validar se a mensagem "Data da Movimentação deve ser menor ou igual à d
     const dataFuturo = await movimentacaoDSL.retornarDataFutura();
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+    
+    await epic('Movimentações');
+    await feature('Cadastro de Movimentação');
+    await story('Adicionar nova movimentação com data movimentação no futuro');
+    await severity('critical');
 
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);

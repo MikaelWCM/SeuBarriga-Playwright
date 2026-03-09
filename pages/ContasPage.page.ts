@@ -26,7 +26,7 @@ export class ContasPage{
     }
 
     async clicarBotaoEditarConta(nomeConta: string){
-        this.limparCampoNome();
+
         const linha = await this.page.getByRole("row").filter({hasText:nomeConta});
         await linha.locator('a[href*="editarConta"]').click();
     }
