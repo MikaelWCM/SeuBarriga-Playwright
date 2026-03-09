@@ -1,10 +1,17 @@
 import { test, expect } from './fixtures';
 import { randomUUID } from 'crypto';
+import { epic, feature, story, severity } from 'allure-js-commons';
+
 
 // login handled by loggedInPage fixture
 
 
 test('Validar se é possível acessar a tela de Resumo Mensal', async({loggedInPage: page, resumoMensalDSL})=>{
+
+    await epic('Resumo Mensal');
+    await feature('Acesso ao Resumo Mensal');
+    await story('Acessar tela de resumo mensal');
+    await severity('critical');
 
     await resumoMensalDSL.acessarResumoMensal();
 
@@ -19,6 +26,11 @@ test('Validar se a mensagem "Movimentação removida com sucesso!" é exibida ao
     const ano = await resumoMensalDSL.retornarAnoAtual();
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await epic('Resumo Mensal');
+    await feature('Gerenciamento de Movimentações');
+    await story('Excluir movimentação existente');
+    await severity('critical');
 
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);
@@ -43,6 +55,11 @@ test('Validar se a mensagem "Conta em uso na movimentações" é exibida caso o 
     const dataFuturo = await movimentacaoDSL.retornarDataFutura();
     const nomeMovimentacao = 'Movimentacao-' + randomUUID();
     const nomeConta = 'ContaComMovimentcao-' + randomUUID();
+
+    await epic('Resumo Mensal');    
+    await feature('Gerenciamento de Movimentações');
+    await story('Excluir conta com movimentações');
+    await severity('critical');
 
     await contasDSL.acessarCadastroDeConta();
     await contasDSL.adicionarConta(nomeConta);

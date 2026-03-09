@@ -1,0 +1,8 @@
+{
+  "name": "Seu Barriga - Allure Report Playwright Automation",
+  "type": "CI",
+  "buildName": "Local Execution",
+  "buildUrl": "http://localhost",
+  "reportUrl": "http://localhost",
+  "buildOrder": 1
+}

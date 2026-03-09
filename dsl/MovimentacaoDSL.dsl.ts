@@ -7,12 +7,6 @@ export class MovimentacaoDSL {
       await this.movimentacaoPage.acessarTelaCriarMovimentacao();
     }
 
-    async validarMensagemRetorno(mensagem: string){
-
-        if(mensagem === "Conta adicionada com sucesso!"){
-           await this.movimentacaoPage.validarMensagemRetorno(mensagem);
-        }
-    }
 
     async criarNovaMovimentacaoPago(tipoMovimentacao: string, dataMovimentacao: string, dataPagamento: string, descricao: string, 
         interessado: string, valor: string, conta: string){
